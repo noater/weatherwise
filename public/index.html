@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WeatherWise</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <main class="container">
+    <header>
+      <h1>WeatherWise</h1>
+      <p>Check the weather. Plan your day.</p>
+    </header>
+
+    <section class="search-section">
+      <h2>Find your city</h2>
+      <form id="search-form">
+        <input
+          type="text"
+          id="city-input"
+          placeholder="Enter a city name"
+          required
+        >
+        <button type="submit">Search</button>
+      </form>
+    </section>
+
+    <section id="weather-section">
+      <h2>Current Weather</h2>
+      <p id="weather-result">Search for a city to see the weather.</p>
+    </section>
+
+    <section id="recommendations-section">
+      <h2>Recommendations</h2>
+      <div id="clothing-advice"></div>
+      <div id="activity-advice"></div>
+    </section>
+
+    <section id="forecast-section">
+      <h2>3-Day Forecast</h2>
+      <div id="forecast-result"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

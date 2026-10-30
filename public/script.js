@@ -108,6 +108,22 @@ async function displayCurrentWeather(place) {
       `Precipitation: ${data.precipitation} mm`;
 
     weatherResult.replaceChildren(cityTitle, details);
+    
+    // Get clothing and activity recommendations
+    const recommendations = getRecommendations(data);
+
+    // Display clothing recommendation
+    const clothingAdvice =
+      document.getElementById("clothing-advice");
+
+    clothingAdvice.textContent = recommendations.clothing;
+
+    // Display activity recommendation
+    const activityAdvice =
+      document.getElementById("activity-advice");
+
+    activityAdvice.textContent = recommendations.activity;
+
 
   } catch (error) {
     weatherResult.textContent =

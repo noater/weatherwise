@@ -49,13 +49,10 @@ data.results.forEach((place) => {
     place.country
   ].filter(Boolean).join(", ");
 
-  button.addEventListener("click", () => {
-    selectedCity = place;
-
-    weatherResult.textContent =
-      `Selected: ${place.name}, ${place.country}. ` +
-      `Weather details coming next.`;
-  });
+ button.addEventListener("click", () => {
+  selectedCity = place;
+  displayCurrentWeather(place);
+});
 
   item.appendChild(button);
   list.appendChild(item);
@@ -69,3 +66,52 @@ data.results.forEach((place) => {
       error.message || "Unable to search for cities.";
   }
 });
+
+function getWeatherDescription(code) {
+  if (code === 0) return "Clear sky";
+  if (code >= 1 && code <= 3) return "Cloudy";
+  if (code === 45 || code === 48) return "Foggy";
+  if ((code >= 51 && code <= 67) ||
+      (code >= 80 && code <= 82)) return "Rain or drizzle";
+  if ((code >= 71 && code <= 77) ||
+      (code >= 85 && code <= 86)) return "Snow";
+  if (code >= 95 && code <= 99) return "Thunderstorm";
+
+  return "Other weather conditions";
+}
+
+async function displayCurrentWeather(place) {
+  weatherResult.textContent =
+    `Loading weather for ${place.name}...`;
+
+  try {
+    const params = new URLSearchParams({
+      latitude: String(place.latitude),
+      longitude: String(place.longitude)
+    });
+
+    const response = await fetch(`/api/weather?${params}`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Weather request failed");
+    }
+
+    const cityTitle = document.createElement("h3");
+    cityTitle.textContent = `${place.name}, ${place.country}`;
+
+    const details = document.createElement("p");
+    details.textContent =
+      `Temperature: ${data.temperature}°C | ` +
+      `${getWeatherDescription(data.weatherCode)} | ` +
+      `Wind: ${data.windSpeed} km/h | ` +
+      `Precipitation: ${data.precipitation} mm`;
+
+    weatherResult.replaceChildren(cityTitle, details);
+
+  } catch (error) {
+    weatherResult.textContent =
+      error.message || "Unable to load weather.";
+  }
+}
+

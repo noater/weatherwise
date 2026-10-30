@@ -163,7 +163,9 @@ res.json({
   }
 });
 
-
+if (require.main === module) {
 app.listen(PORT, () => {
   console.log(`WeatherWise running at http://localhost:${PORT}`);
 });
+}
+module.exports = app;

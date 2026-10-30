@@ -95,13 +95,18 @@ app.get("/api/weather", async (req, res) => {
   }
 
   try {
-    const params = new URLSearchParams({
-      latitude: String(lat),
-      longitude: String(lon),
-      current:
-        "temperature_2m,weather_code,wind_speed_10m,precipitation",
-      timezone: "auto"
-    });
+   
+const params = new URLSearchParams({
+  latitude: String(lat),
+  longitude: String(lon),
+  current:
+    "temperature_2m,weather_code,wind_speed_10m,precipitation",
+  daily:
+    "temperature_2m_max,temperature_2m_min,weather_code",
+  forecast_days: "3",
+  timezone: "auto"
+});
+
 
     const url = `https://api.open-meteo.com/v1/forecast?${params}`;
 
@@ -117,12 +122,37 @@ app.get("/api/weather", async (req, res) => {
       throw new Error("Current weather data unavailable");
     }
 
-    res.json({
-      temperature: data.current.temperature_2m,
-      weatherCode: data.current.weather_code,
-      windSpeed: data.current.wind_speed_10m,
-      precipitation: data.current.precipitation
-    });
+   
+if (
+  !data.daily ||
+  !Array.isArray(data.daily.time) ||
+  !Array.isArray(data.daily.temperature_2m_max) ||
+  !Array.isArray(data.daily.temperature_2m_min) ||
+  !Array.isArray(data.daily.weather_code) ||
+  data.daily.time.length !== 3 ||
+  ![
+    data.daily.temperature_2m_max,
+    data.daily.temperature_2m_min,
+    data.daily.weather_code
+  ].every(values => values.length === 3)
+) {
+  throw new Error("Forecast data unavailable");
+}
+
+res.json({
+  temperature: data.current.temperature_2m,
+  weatherCode: data.current.weather_code,
+  windSpeed: data.current.wind_speed_10m,
+  precipitation: data.current.precipitation,
+
+  forecast: data.daily.time.map((date, index) => ({
+    date: date,
+    maxTemperature: data.daily.temperature_2m_max[index],
+    minTemperature: data.daily.temperature_2m_min[index],
+    weatherCode: data.daily.weather_code[index]
+  }))
+});
+
 
   } catch (error) {
     console.error("Weather API error:", error.message);

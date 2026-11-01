@@ -1,0 +1,99 @@
+
+/* WeatherWise - Main Styles */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #e5f4ff, #f9fbff);
+  color: #243b53;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 850px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+h1 {
+  font-size: 42px;
+  color: #2878b5;
+  margin-bottom: 10px;
+}
+
+header p {
+  color: #607d98;
+  font-size: 18px;
+}
+
+section {
+  background: white;
+  padding: 25px;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(35, 80, 120, 0.08);
+}
+
+h2 {
+  margin-top: 0;
+  color: #2878b5;
+  font-size: 22px;
+}
+
+#search-form {
+  display: flex;
+  gap: 10px;
+}
+
+#city-input {
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid #c7d9e8;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+button {
+  background: #2878b5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 24px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #195b91;
+}
+
+#weather-result,
+#forecast-result,
+#clothing-advice,
+#activity-advice {
+  line-height: 1.7;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 34px;
+  }
+
+  #search-form {
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+  }
+}

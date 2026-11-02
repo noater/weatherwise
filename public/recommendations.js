@@ -18,7 +18,7 @@ function getRecommendations(weather) {
   }
 
   const rainy =
-    precipitation > 0 ||
+    precipitation >= 0.5 ||
     (weatherCode >= 51 && weatherCode <= 67) ||
     (weatherCode >= 80 && weatherCode <= 82);
 

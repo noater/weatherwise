@@ -1,4 +1,3 @@
-
 const searchForm = document.getElementById("search-form");
 const cityInput = document.getElementById("city-input");
 const weatherResult = document.getElementById("weather-result");
@@ -18,7 +17,7 @@ searchForm.addEventListener("submit", async (event) => {
 
   try {
     const response = await fetch(
-      `/api/cities?name=${encodeURIComponent(city)}`
+      `/api/cities?name=${encodeURIComponent(city)}`,
     );
 
     const data = await response.json();
@@ -36,34 +35,28 @@ searchForm.addEventListener("submit", async (event) => {
 
     const list = document.createElement("ul");
 
-    
-data.results.forEach((place) => {
-  const item = document.createElement("li");
-  const button = document.createElement("button");
+    data.results.forEach((place) => {
+      const item = document.createElement("li");
+      const button = document.createElement("button");
 
-  button.type = "button";
+      button.type = "button";
 
-  button.textContent = [
-    place.name,
-    place.region,
-    place.country
-  ].filter(Boolean).join(", ");
+      button.textContent = [place.name, place.region, place.country]
+        .filter(Boolean)
+        .join(", ");
 
- button.addEventListener("click", () => {
-  selectedCity = place;
-  displayCurrentWeather(place);
-});
+      button.addEventListener("click", () => {
+        selectedCity = place;
+        displayCurrentWeather(place);
+      });
 
-  item.appendChild(button);
-  list.appendChild(item);
-});
-
+      item.appendChild(button);
+      list.appendChild(item);
+    });
 
     weatherResult.appendChild(list);
-
   } catch (error) {
-    weatherResult.textContent =
-      error.message || "Unable to search for cities.";
+    weatherResult.textContent = error.message || "Unable to search for cities.";
   }
 });
 
@@ -71,23 +64,22 @@ function getWeatherDescription(code) {
   if (code === 0) return "Clear sky";
   if (code >= 1 && code <= 3) return "Cloudy";
   if (code === 45 || code === 48) return "Foggy";
-  if ((code >= 51 && code <= 67) ||
-      (code >= 80 && code <= 82)) return "Rain or drizzle";
-  if ((code >= 71 && code <= 77) ||
-      (code >= 85 && code <= 86)) return "Snow";
+  if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82))
+    return "Rain or drizzle";
+  if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) return "Snow";
   if (code >= 95 && code <= 99) return "Thunderstorm";
 
   return "Other weather conditions";
 }
 
 async function displayCurrentWeather(place) {
-  weatherResult.textContent =
-    `Loading weather for ${place.name}...`;
-
+  weatherResult.textContent = `Loading weather for ${place.name}...`;
+  document.getElementById("clothing-advice").textContent = "";
+  document.getElementById("activity-advice").textContent = "";
   try {
     const params = new URLSearchParams({
       latitude: String(place.latitude),
-      longitude: String(place.longitude)
+      longitude: String(place.longitude),
     });
 
     const response = await fetch(`/api/weather?${params}`);
@@ -108,26 +100,20 @@ async function displayCurrentWeather(place) {
       `Precipitation: ${data.precipitation} mm`;
 
     weatherResult.replaceChildren(cityTitle, details);
-    
+
     // Get clothing and activity recommendations
     const recommendations = getRecommendations(data);
 
     // Display clothing recommendation
-    const clothingAdvice =
-      document.getElementById("clothing-advice");
+    const clothingAdvice = document.getElementById("clothing-advice");
 
     clothingAdvice.textContent = recommendations.clothing;
 
     // Display activity recommendation
-    const activityAdvice =
-      document.getElementById("activity-advice");
+    const activityAdvice = document.getElementById("activity-advice");
 
     activityAdvice.textContent = recommendations.activity;
-
-
   } catch (error) {
-    weatherResult.textContent =
-      error.message || "Unable to load weather.";
+    weatherResult.textContent = error.message || "Unable to load weather.";
   }
 }
-

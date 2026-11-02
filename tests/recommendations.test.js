@@ -50,6 +50,16 @@ test("Rain recommends an umbrella", () => {
   assert.match(result.clothing, /umbrella/);
   assert.match(result.activity, /indoor/);
 });
+test("Very light precipitation does not trigger rain advice", () => {
+  const result = getRecommendations({
+    ...normalWeather,
+    precipitation: 0.1,
+    weatherCode: 0
+  });
+
+  assert.doesNotMatch(result.clothing, /umbrella/i);
+  assert.doesNotMatch(result.activity, /indoor/i);
+});
 
 test("Snow recommends waterproof shoes", () => {
   const result = getRecommendations({

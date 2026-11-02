@@ -1,0 +1,36 @@
+
+name: Docker Build and Smoke Test
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t weatherwise:test .
+
+      - name: Start container and check website
+        run: |
+          docker run -d --name weatherwise-test -p 3000:3000 weatherwise:test
+
+          for attempt in 1 2 3 4 5; do
+            if curl --fail --silent http://localhost:3000/ > /dev/null; then
+              echo "Docker smoke test passed!"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker logs weatherwise-test
+          exit 1
+

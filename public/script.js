@@ -113,7 +113,47 @@ async function displayCurrentWeather(place) {
     const activityAdvice = document.getElementById("activity-advice");
 
     activityAdvice.textContent = recommendations.activity;
+    // Display the 3-day weather forecast
+displayForecast(data.forecast);
+
+
   } catch (error) {
     weatherResult.textContent = error.message || "Unable to load weather.";
   }
 }
+
+function displayForecast(forecast) {
+  const forecastResult =
+    document.getElementById("forecast-result");
+
+  if (!Array.isArray(forecast) || forecast.length === 0) {
+    forecastResult.textContent = "Forecast unavailable.";
+    return;
+  }
+
+  const forecastGrid = document.createElement("div");
+  forecastGrid.className = "forecast-grid";
+
+  forecast.forEach((day) => {
+    const card = document.createElement("div");
+    card.className = "forecast-day";
+
+    const date = document.createElement("h3");
+    date.textContent = day.date;
+
+    const temperature = document.createElement("p");
+    temperature.textContent =
+      `High: ${day.maxTemperature}°C | Low: ${day.minTemperature}°C`;
+
+    const condition = document.createElement("p");
+    condition.textContent =
+      getWeatherDescription(day.weatherCode);
+
+    card.append(date, temperature, condition);
+    forecastGrid.appendChild(card);
+  });
+
+  forecastResult.replaceChildren(forecastGrid);
+}
+
+

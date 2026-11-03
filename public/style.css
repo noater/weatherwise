@@ -97,3 +97,39 @@ button:hover {
     width: 100%;
   }
 }
+
+/* 3-Day Forecast */
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.forecast-day {
+  background-color: #f0f7fa;
+  border: 1px solid #d8e7ee;
+  border-radius: 12px;
+  padding: 18px 12px;
+  text-align: center;
+}
+
+.forecast-day h3 {
+  color: #39758d;
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.forecast-day p {
+  font-size: 14px;
+  margin: 10px 0;
+}
+
+/* Responsive layout for smaller screens */
+
+@media (max-width: 600px) {
+  .forecast-grid {
+    grid-template-columns: 1fr;
+  }
+}

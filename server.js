@@ -1,7 +1,6 @@
-
 const express = require("express");
 const path = require("node:path");
-
+const logger = require("./logger");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -11,15 +10,13 @@ app.use(express.static(path.join(__dirname, "public")));
 // Search for cities using Open-Meteo
 app.get("/api/cities", async (req, res) => {
   const city = req.query.name;
+  logger.info("City search request received");
 
   // Validate the user's input
-  if (
-    typeof city !== "string" ||
-    city.trim().length < 2 ||
-    city.length > 100
-  ) {
+  if (typeof city !== "string" || city.trim().length < 2 || city.length > 100) {
+    logger.warn("Invalid city search input");
     return res.status(400).json({
-      error: "Please enter a valid city name."
+      error: "Please enter a valid city name.",
     });
   }
 
@@ -28,11 +25,10 @@ app.get("/api/cities", async (req, res) => {
       name: city.trim(),
       count: "5",
       language: "en",
-      format: "json"
+      format: "json",
     });
 
-    const url =
-      `https://geocoding-api.open-meteo.com/v1/search?${params}`;
+    const url = `https://geocoding-api.open-meteo.com/v1/search?${params}`;
 
     const response = await fetch(url);
 
@@ -48,16 +44,15 @@ app.get("/api/cities", async (req, res) => {
       country: place.country,
       region: place.admin1,
       latitude: place.latitude,
-      longitude: place.longitude
+      longitude: place.longitude,
     }));
 
     res.json({ results: cities });
-
   } catch (error) {
-    console.error("City search error:", error.message);
+    logger.error(`City search error: ${error.message}`);
 
     res.status(502).json({
-      error: "Unable to search for cities right now."
+      error: "Unable to search for cities right now.",
     });
   }
 });
@@ -74,7 +69,7 @@ app.get("/api/weather", async (req, res) => {
     !longitude.trim()
   ) {
     return res.status(400).json({
-      error: "Invalid location coordinates."
+      error: "Invalid location coordinates.",
     });
   }
 
@@ -90,23 +85,19 @@ app.get("/api/weather", async (req, res) => {
     lon > 180
   ) {
     return res.status(400).json({
-      error: "Invalid location coordinates."
+      error: "Invalid location coordinates.",
     });
   }
 
   try {
-   
-const params = new URLSearchParams({
-  latitude: String(lat),
-  longitude: String(lon),
-  current:
-    "temperature_2m,weather_code,wind_speed_10m,precipitation",
-  daily:
-    "temperature_2m_max,temperature_2m_min,weather_code",
-  forecast_days: "3",
-  timezone: "auto"
-});
-
+    const params = new URLSearchParams({
+      latitude: String(lat),
+      longitude: String(lon),
+      current: "temperature_2m,weather_code,wind_speed_10m,precipitation",
+      daily: "temperature_2m_max,temperature_2m_min,weather_code",
+      forecast_days: "3",
+      timezone: "auto",
+    });
 
     const url = `https://api.open-meteo.com/v1/forecast?${params}`;
 
@@ -122,50 +113,47 @@ const params = new URLSearchParams({
       throw new Error("Current weather data unavailable");
     }
 
-   
-if (
-  !data.daily ||
-  !Array.isArray(data.daily.time) ||
-  !Array.isArray(data.daily.temperature_2m_max) ||
-  !Array.isArray(data.daily.temperature_2m_min) ||
-  !Array.isArray(data.daily.weather_code) ||
-  data.daily.time.length !== 3 ||
-  ![
-    data.daily.temperature_2m_max,
-    data.daily.temperature_2m_min,
-    data.daily.weather_code
-  ].every(values => values.length === 3)
-) {
-  throw new Error("Forecast data unavailable");
-}
+    if (
+      !data.daily ||
+      !Array.isArray(data.daily.time) ||
+      !Array.isArray(data.daily.temperature_2m_max) ||
+      !Array.isArray(data.daily.temperature_2m_min) ||
+      !Array.isArray(data.daily.weather_code) ||
+      data.daily.time.length !== 3 ||
+      ![
+        data.daily.temperature_2m_max,
+        data.daily.temperature_2m_min,
+        data.daily.weather_code,
+      ].every((values) => values.length === 3)
+    ) {
+      throw new Error("Forecast data unavailable");
+    }
 
-res.json({
-  temperature: data.current.temperature_2m,
-  weatherCode: data.current.weather_code,
-  windSpeed: data.current.wind_speed_10m,
-  precipitation: data.current.precipitation,
+    res.json({
+      temperature: data.current.temperature_2m,
+      weatherCode: data.current.weather_code,
+      windSpeed: data.current.wind_speed_10m,
+      precipitation: data.current.precipitation,
 
-  forecast: data.daily.time.map((date, index) => ({
-    date: date,
-    maxTemperature: data.daily.temperature_2m_max[index],
-    minTemperature: data.daily.temperature_2m_min[index],
-    weatherCode: data.daily.weather_code[index]
-  }))
-});
-
-
+      forecast: data.daily.time.map((date, index) => ({
+        date: date,
+        maxTemperature: data.daily.temperature_2m_max[index],
+        minTemperature: data.daily.temperature_2m_min[index],
+        weatherCode: data.daily.weather_code[index],
+      })),
+    });
   } catch (error) {
     console.error("Weather API error:", error.message);
 
     res.status(502).json({
-      error: "Unable to retrieve weather information."
+      error: "Unable to retrieve weather information.",
     });
   }
 });
 
 if (require.main === module) {
-app.listen(PORT, () => {
-  console.log(`WeatherWise running at http://localhost:${PORT}`);
-});
+  app.listen(PORT, () => {
+    console.log(`WeatherWise running at http://localhost:${PORT}`);
+  });
 }
 module.exports = app;

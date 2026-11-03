@@ -143,7 +143,7 @@ app.get("/api/weather", async (req, res) => {
       })),
     });
   } catch (error) {
-    console.error("Weather API error:", error.message);
+    logger.error(`Weather API error: ${error.message}`);
 
     res.status(502).json({
       error: "Unable to retrieve weather information.",

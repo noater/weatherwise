@@ -4,6 +4,17 @@ const logger = require("./logger");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+
+ // Log every completed HTTP request
+app.use((req, res, next) => {
+  res.on("finish", () => {
+    logger.info(`${req.method} ${req.path} -> ${res.statusCode}`);
+  });
+
+  next();
+});
+
+
 // Serve frontend files
 app.use(express.static(path.join(__dirname, "public")));
 

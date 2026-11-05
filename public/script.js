@@ -76,6 +76,7 @@ async function displayCurrentWeather(place) {
   weatherResult.textContent = `Loading weather for ${place.name}...`;
   document.getElementById("clothing-advice").textContent = "";
   document.getElementById("activity-advice").textContent = "";
+  document.getElementById("forecast-result").replaceChildren();
   try {
     const params = new URLSearchParams({
       latitude: String(place.latitude),

@@ -5,6 +5,9 @@ let selectedCity = null;
 
 searchForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  document.getElementById("clothing-advice").textContent = "";
+  document.getElementById("activity-advice").textContent = "";
+  document.getElementById("forecast-result").replaceChildren();
 
   const city = cityInput.value.trim();
 

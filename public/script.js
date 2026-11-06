@@ -1,13 +1,20 @@
 const searchForm = document.getElementById("search-form");
 const cityInput = document.getElementById("city-input");
 const weatherResult = document.getElementById("weather-result");
+const clothingAdvice = document.getElementById("clothing-advice");
+const activityAdvice = document.getElementById("activity-advice");
+const forecastResult = document.getElementById("forecast-result");
 let selectedCity = null;
+
+function clearResults() {
+  clothingAdvice.textContent = "";
+  activityAdvice.textContent = "";
+  forecastResult.replaceChildren();
+}
 
 searchForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  document.getElementById("clothing-advice").textContent = "";
-  document.getElementById("activity-advice").textContent = "";
-  document.getElementById("forecast-result").replaceChildren();
+clearResults();
 
   const city = cityInput.value.trim();
 
@@ -77,9 +84,7 @@ function getWeatherDescription(code) {
 
 async function displayCurrentWeather(place) {
   weatherResult.textContent = `Loading weather for ${place.name}...`;
-  document.getElementById("clothing-advice").textContent = "";
-  document.getElementById("activity-advice").textContent = "";
-  document.getElementById("forecast-result").replaceChildren();
+ clearResults();
   try {
     const params = new URLSearchParams({
       latitude: String(place.latitude),
